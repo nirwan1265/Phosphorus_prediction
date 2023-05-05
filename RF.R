@@ -319,7 +319,7 @@ set.seed(111)
 output.rf<- randomForest(Total_P ~ .,  
                          ntree=500, keep.forest=T,
                          importance=T, mtry=3, 
-                         data = rf.dat[,-c(1,2,3)])
+                         data = rf.dat[,-c(1,2)])
 output.rf
 imp.dat <- randomForest::importance(output.rf, scale=T)
 predict.train <- predict(output.rf, data = rf.dat)
