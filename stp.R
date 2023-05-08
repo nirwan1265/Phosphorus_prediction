@@ -1,12 +1,14 @@
 #Figure 3 Results of the random forest model predicting soil total P concentration.
 
 ##random forest model
+rf.dat <- read.csv("data/filtered_data/P_stp_he2021_predictors_he2022_global.csv")
 rf.dat <- read.csv("data/rf.dat.csv")
+
 # with soil errosion
-rf.dat <- read.csv("data/Total_P_errosion.csv")
-rf.dat <- rf.dat[complete.cases(rf.dat), ]
-colnames(rf.dat)
-str(rf.dat)
+# rf.dat <- read.csv("data/Total_P_errosion.csv")
+# rf.dat <- rf.dat[complete.cases(rf.dat), ]
+# colnames(rf.dat)
+# str(rf.dat)
 
 
 # Adding country and filter by continent
@@ -28,11 +30,10 @@ stpcountry <- data.frame(
   BEDROCK = rf.dat$BEDROCK,
   SOIL_TYPE = rf.dat$SOIL_TYPE,
   WRB_SOIL_TYPE = rf.dat$WRB_SOIL_TYPE,
-  ERROSION = rf.dat$Errosion,
   mapname = map.where(database="world", 
                       rf.dat$LONGITUDE, rf.dat$LATITUDE)) %>%
-  inner_join(iso3166) %>%
-  inner_join(countryRegions, by =c("a3"="ISO3"))
+  dplyr::inner_join(iso3166) %>%
+  dplyr::inner_join(countryRegions, by =c("a3"="ISO3"))
 
 table(stpcountry$GEO3major)
 # 1:17 without errosion and 1:18 with errosion data
