@@ -15,10 +15,10 @@ bray_africa_clean <- bray_africa %>% select_if(function(x) var(x, na.rm = TRUE) 
 
 # Perform PCA on the cleaned data
 pca_bray_africa <- prcomp(bray_africa_clean, center = TRUE, scale. = TRUE)
-# pairs.panels(pca_bray_africa$x[,1:5],
-#              gap = 0,
-#              #bg = c("red", "yellow", "blue")[bray_africa_clean$ELEVATION],
-#              pch = 21)
+pairs.panels(pca_bray_africa$x[,1:5],
+             gap = 0,
+             bg = c("red", "yellow", "blue")[bray_africa_clean$],
+             pch = 21)
 
 # Remove constant/zero variance columns
 bray_global_clean <- bray_global %>% select_if(function(x) var(x, na.rm = TRUE) > 0)

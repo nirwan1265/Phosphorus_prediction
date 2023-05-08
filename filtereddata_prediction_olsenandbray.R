@@ -15,6 +15,12 @@ bray_africa$BEDROCK <- as.factor(bray_africa$BEDROCK)
 bray_africa$SOIL.TYPE <- as.factor(bray_africa$SOIL.TYPE)
 bray_africa$BIOMES <- as.factor(bray_africa$BIOMES)
 
+#### Adding stp data:
+var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
+var_raster <- raster(var_tif)
+bray_africa$stp10 <- raster::extract(var_raster, data.frame(longitude = bray_africa$x, latitude = bray_africa$y))
+bray_africa <- bray_africa[complete.cases(bray_africa), ]
+
 output_bray_africa<- randomForest(p_avg ~ .,  
                                   ntree=500, keep.forest=T,
                                   importance=T, mtry=3, 
@@ -27,6 +33,13 @@ bray_global <- bray_global[complete.cases(bray_global), ] %>% dplyr::select(-c(1
 bray_global$BEDROCK <- as.factor(bray_global$BEDROCK)
 bray_global$SOIL.TYPE <- as.factor(bray_global$SOIL.TYPE)
 bray_global$BIOMES <- as.factor(bray_global$BIOMES)
+
+#### Adding stp data:
+var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
+var_raster <- raster(var_tif)
+bray_global$stp10 <- raster::extract(var_raster, data.frame(longitude = bray_global$x, latitude = bray_global$y))
+bray_global <- bray_global[complete.cases(bray_global), ]
+
 
 output_bray_global<- randomForest(p_avg ~ .,  
                                   ntree=500, keep.forest=T,
@@ -41,6 +54,13 @@ olsen_africa$BEDROCK <- as.factor(olsen_africa$BEDROCK)
 olsen_africa$SOIL.TYPE <- as.factor(olsen_africa$SOIL.TYPE)
 olsen_africa$BIOMES <- as.factor(olsen_africa$BIOMES)
 
+#### Adding stp data:
+var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
+var_raster <- raster(var_tif)
+olsen_africa$stp10 <- raster::extract(var_raster, data.frame(longitude = olsen_africa$x, latitude = olsen_africa$y))
+olsen_africa <- olsen_africa[complete.cases(olsen_africa), ]
+
+
 output_olsen_africa<- randomForest(p_avg ~ .,  
                                    ntree=500, keep.forest=T,
                                    importance=T, mtry=3, 
@@ -52,6 +72,13 @@ olsen_global <- olsen_global[complete.cases(olsen_global), ] %>% dplyr::select(-
 olsen_global$BEDROCK <- as.factor(olsen_global$BEDROCK)
 olsen_global$SOIL.TYPE <- as.factor(olsen_global$SOIL.TYPE)
 olsen_global$BIOMES <- as.factor(olsen_global$BIOMES)
+
+#### Adding stp data:
+var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
+var_raster <- raster(var_tif)
+olsen_global$stp10 <- raster::extract(var_raster, data.frame(longitude = olsen_global$x, latitude = olsen_global$y))
+olsen_global <- olsen_global[complete.cases(olsen_global), ]
+
 
 output_olsen_global<- randomForest(p_avg ~ .,  
                                    ntree=500, keep.forest=T,
@@ -119,7 +146,7 @@ cor_bray_global <- cor(predict_bray_global,bray_global$p_avg)
 mse_bray_global <- mean((predict_bray_global - bray_global$p_avg)^2)
 
 # Bray global - LatAfrica corelation
-cor_bray_global <- cor(predict_bray_global_lataf,bray_africa$p_avg)
+cor_bray_global_lataf <- cor(predict_bray_global_lataf,bray_africa$p_avg)
 mse_bray_global <- mean((predict_bray_global_lataf - bray_africa$p_avg)^2)
 
 # olsen Africa
