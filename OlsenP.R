@@ -131,3 +131,10 @@ ggsave("OlsenP_Africa_LatinAmerica_Errosion.tiff", importance.accuracy.plots,
        width = 28, height = 13, units = "cm", scale = 1, dpi = 300)
 
 
+x <- as.data.frame(predict_bray_africa)
+y <- as.data.frame(predict_bray_global_lataf)
+z <- cbind(x,y)
+z <- cbind(z,bray_africa$p_avg)
+hist(x$predict_bray_africa)
+hist(y$predict_bray_global_lataf)
+hist(bray_africa$p_avg)
