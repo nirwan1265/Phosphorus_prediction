@@ -4,7 +4,7 @@
 ################################################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-<<<<<<< HEAD
+
 ### Bray afrlac
 bray_afrlac <- read.csv("data/filtered_data/P_Bray_mcdowell2023_predictors_he2022_AFRLAC.csv")
 colnames(bray_afrlac)
@@ -45,7 +45,7 @@ bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
 bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
 bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
 bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
-=======
+
 ### Bray afrlat
 bray_afrlat <- read.csv("data/filtered_data/P_Bray_mcdowell2023_predictors_he2022_AFRLAC.csv")
 str(bray_afrlat)
@@ -53,23 +53,21 @@ bray_afrlat <- bray_afrlat[complete.cases(bray_afrlat), ] %>% dplyr::select(-c(1
 bray_afrlat$BEDROCK <- as.factor(bray_afrlat$BEDROCK)
 bray_afrlat$SOIL.TYPE <- as.factor(bray_afrlat$SOIL.TYPE)
 bray_afrlat$BIOMES <- as.factor(bray_afrlat$BIOMES)
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
 
 #### Adding stp data:
 # var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
 # var_raster <- raster(var_tif)
-<<<<<<< HEAD
 # bray_afrlac$stp10 <- raster::extract(var_raster, data.frame(longitude = bray_afrlac$x, latitude = bray_afrlac$y))
 # bray_afrlac <- bray_afrlac[complete.cases(bray_afrlac), ]
-=======
 # bray_afrlat$stp10 <- raster::extract(var_raster, data.frame(longitude = bray_afrlat$x, latitude = bray_afrlat$y))
 # bray_afrlat <- bray_afrlat[complete.cases(bray_afrlat), ]
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
 
 
 ### Bray Global
 bray_global <- read.csv("data/filtered_data/P_Bray_mcdowell2023_predictors_he2022_global.csv")
-<<<<<<< HEAD
+
 colnames(bray_global)
 # Adding country and filter by continent
 bray_global <- data.frame( 
@@ -108,18 +106,14 @@ bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
 bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
 bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
 
-=======
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
 str(bray_global)
 bray_global <- bray_global[complete.cases(bray_global), ] %>% dplyr::select(-c(18:20))
 bray_global$BEDROCK <- as.factor(bray_global$BEDROCK)
 bray_global$SOIL.TYPE <- as.factor(bray_global$SOIL.TYPE)
 bray_global$BIOMES <- as.factor(bray_global$BIOMES)
-<<<<<<< HEAD
 bray_global$GEO3major <- as.factor(bray_global$GEO3major)
-
-=======
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+table(bray_global$GEO3major)
+bray_global_subset <- bray_global[!bray_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 
 #### Adding stp data:
 # var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
@@ -128,7 +122,6 @@ bray_global$GEO3major <- as.factor(bray_global$GEO3major)
 # bray_global <- bray_global[complete.cases(bray_global), ]
 
 
-<<<<<<< HEAD
 ### Olsen afrlac
 olsen_afrlac <- read.csv("data/filtered_data/P_Olsen_mcdowell2023_predictors_he2022_AFRLAC.csv")
 colnames(olsen_afrlac)
@@ -168,10 +161,10 @@ olsen_afrlac$BEDROCK <- as.factor(olsen_afrlac$BEDROCK)
 olsen_afrlac$SOIL.TYPE <- as.factor(olsen_afrlac$SOIL.TYPE)
 olsen_afrlac$BIOMES <- as.factor(olsen_afrlac$BIOMES)
 olsen_afrlac$GEO3major <- as.factor(olsen_afrlac$GEO3major)
+olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 
 
 
-=======
 ### Olsen AfrLat
 olsen_afrlat <- read.csv("data/filtered_data/P_Olsen_mcdowell2023_predictors_he2022_AFRLAC.csv")
 str(olsen_afrlat)
@@ -179,23 +172,22 @@ olsen_afrlat <- olsen_afrlat[complete.cases(olsen_afrlat), ] %>% dplyr::select(-
 olsen_afrlat$BEDROCK <- as.factor(olsen_afrlat$BEDROCK)
 olsen_afrlat$SOIL.TYPE <- as.factor(olsen_afrlat$SOIL.TYPE)
 olsen_afrlat$BIOMES <- as.factor(olsen_afrlat$BIOMES)
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
 
 #### Adding stp data:
 # var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
 # var_raster <- raster(var_tif)
-<<<<<<< HEAD
+
 # olsen_afrlac$stp10 <- raster::extract(var_raster, data.frame(longitude = olsen_afrlac$x, latitude = olsen_afrlac$y))
 # olsen_afrlac <- olsen_afrlac[complete.cases(olsen_afrlac), ]
-=======
+
 # olsen_afrlat$stp10 <- raster::extract(var_raster, data.frame(longitude = olsen_afrlat$x, latitude = olsen_afrlat$y))
 # olsen_afrlat <- olsen_afrlat[complete.cases(olsen_afrlat), ]
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
 
 
 ### Olsen Global
 olsen_global <- read.csv("data/filtered_data/P_Olsen_mcdowell2023_predictors_he2022_global.csv")
-<<<<<<< HEAD
 colnames(olsen_global)
 
 # Adding country and filter by continent
@@ -235,18 +227,13 @@ olsen_afrlac$GEO3major <- as.factor(olsen_afrlac$GEO3major)
 
 
 str(olsen_global)
-=======
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
 olsen_global <- olsen_global[complete.cases(olsen_global), ] %>% dplyr::select(-c(17:19))
 olsen_global$BEDROCK <- as.factor(olsen_global$BEDROCK)
 olsen_global$SOIL.TYPE <- as.factor(olsen_global$SOIL.TYPE)
 olsen_global$BIOMES <- as.factor(olsen_global$BIOMES)
-<<<<<<< HEAD
 olsen_global$GEO3major <- as.factor(olsen_global$GEO3major)
+olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 
-
-=======
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
 
 #### Adding stp data:
 # var_tif <- "~/Library/Mobile Documents/com~apple~CloudDocs/Research/Data/tif/stp.0-10cm.tif"
@@ -255,7 +242,6 @@ olsen_global$GEO3major <- as.factor(olsen_global$GEO3major)
 # olsen_global <- olsen_global[complete.cases(olsen_global), ]
 
 
-<<<<<<< HEAD
 ### Stp afrlac
 stp_afrlac <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
 colnames(stp_afrlac)
@@ -322,9 +308,9 @@ stp_global <- data.frame(
   dplyr::inner_join(iso3166) %>%
   dplyr::inner_join(countryRegions, by =c("a3"="ISO3")) %>%
   dplyr::select(c(1:17,26))
+
 table(stp_global$GEO3major)
 
-=======
 ### Stp AfrLat
 stp_afrlat <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
 str(stp_afrlat)
@@ -337,16 +323,14 @@ stp_afrlat$WRB_SOIL_TYPE <- as.factor(stp_afrlat$WRB_SOIL_TYPE)
 
 ### Stp Global
 stp_global <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_global.csv")
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
 str(stp_global)
 stp_global <- stp_global[complete.cases(stp_global), ]
 stp_global$BEDROCK <- as.factor(stp_global$BEDROCK)
 stp_global$SOIL_TYPE <- as.factor(stp_global$SOIL_TYPE)
 stp_global$BIOMES <- as.factor(stp_global$BIOMES)
 stp_global$WRB_SOIL_TYPE <- as.factor(stp_global$WRB_SOIL_TYPE)
-<<<<<<< HEAD
 stp_global$GEO3major <- as.factor(stp_global$GEO3major)
-=======
+stp_global_subset <- stp_global[!stp_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 str(stp_global)
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
 

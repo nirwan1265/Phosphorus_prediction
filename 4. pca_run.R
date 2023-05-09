@@ -8,7 +8,6 @@ library(FactoMineR)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ################################################################################
-<<<<<<< HEAD
 #  FAMD 
 ################################################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,22 +36,49 @@ fviz_pca_ind(famd_bray_global,
              #fill = "lightgray",
              repel = TRUE,
              label = "none",
-             col.ind = bray_global$SOIL.TYPE)
+             col.ind = bray_global$GEO3major)
 table(bray_global$GEO3major)
-=======
+
+### olsen afrlat
+famd_olsen_afrlac <- FAMD(olsen_afrlac[,-1,17], graph = F)
+quartz()
+fviz_pca_ind(famd_olsen_afrlac,
+             title = "FAMD - olsen_afrlac - First two principal components",
+             palette = "ucscgb",
+             pointshape = 19,
+             pointsize = 2,
+             #fill = "lightgray",
+             repel = TRUE,
+             label = "none",
+             col.ind = olsen_afrlac$GEO3major)
+
+### olsen global
+famd_olsen_global <- FAMD(olsen_global[,-1,17], graph = F)
+quartz()
+fviz_pca_ind(famd_olsen_global,
+             title = "FAMD - olsen_global - First two principal components",
+             palette = "ucscgb",
+             pointshape = 19,
+             pointsize = 2,
+             #fill = "lightgray",
+             repel = TRUE,
+             label = "none",
+             col.ind = olsen_global$GEO3major)
+table(olsen_global$GEO3major)
+
 #  Remove constant/zero variance columns
 ################################################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-# Bray Global
-bray_global_clean <- bray_global %>%
+# olsen Global
+olsen_global_clean <- olsen_global %>%
   #dplyr::mutate_if(is.factor, as.numeric) %>%
   dplyr::select_if(function(x) var(x, na.rm = TRUE) > 0) %>%
   dplyr::select(-c(1,2))
 
 
-# Bray AfricaLat
-bray_afrlat_clean <- bray_afrlat %>%
+# olsen AfricaLat
+olsen_afrlat_clean <- olsen_afrlat %>%
   #dplyr::mutate_if(is.factor, as.numeric) %>%
   dplyr::select_if(function(x) var(x, na.rm = TRUE) > 0) %>%
   dplyr::select(-c(1,2))
@@ -61,7 +87,7 @@ bray_afrlat_clean <- bray_afrlat %>%
 
 quartz()
 par(mfrow = c(1,2))
-famd_result <- FAMD(bray_afrlat[,-1], graph = F)
+famd_result <- FAMD(olsen_afrlat[,-1], graph = F)
 quartz()
 fviz_pca_ind(famd_result,
              title = "Individuals - First two principal components",
@@ -73,7 +99,7 @@ fviz_pca_ind(famd_result,
              label = "none") # Use repel to avoid text overlapping
 
 
-famd_result <- FAMD(bray_global[,-1], graph = F)
+famd_result <- FAMD(olsen_global[,-1], graph = F)
 quartz()
 fviz_pca_ind(famd_result,
              title = "Individuals - First two principal components",
@@ -84,4 +110,4 @@ fviz_pca_ind(famd_result,
              repel = TRUE,
              label = "none") # Use repel to avoid text overlapping
 
->>>>>>> 69e7c3b431bfc4233ed3bf6e6b71f68aec04d6b2
+
