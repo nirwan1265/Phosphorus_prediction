@@ -44,7 +44,7 @@ output_stp_afrlac<- randomForest(p_avg ~ .,
                                  ntree=500, keep.forest=T,
                                  importance=T, mtry=3, 
                                  sampsize=310,
-                                 strata=stp_afrlat$GEO3major,
+                                 strata=stp_afrlac$GEO3major,
                                  data = stp_afrlac[,-c(1,2,18)])
 
 
@@ -74,45 +74,55 @@ predict_bray_global <- predict(output_bray_global, data = bray_global)
 val_bray_global <- data.frame(predict_bray_global, bray_global)
 
 
-# Bray global - latinafrlat test
+# Bray global - latinafrlac test
 imp_bray_global_lataf <- randomForest::importance(output_bray_global, scale=T)
 # making class equal
 # https://stackoverflow.com/questions/24829674/r-random-forest-error-type-of-predictors-in-new-data-do-not-match
-xtest <- rbind(bray_global[1,], bray_afrlat)
-colnames(bray_global)
-colnames(bray_afrlat)
-colnames(xtest)
+xtest <- rbind(bray_global[1,], bray_afrlac)
 xtest <- xtest[-1,]
-predict_bray_global_lataf <- predict(output_bray_global, newdata = xtest[,-c(1,2)])
-val_bray_global_lataf <- data.frame(predict_bray_global, bray_global)
+predict_bray_global_lataf <- predict(output_bray_global, newdata = xtest[,-c(1,2,18)])
+val_bray_global_lataf <- data.frame(predict_bray_global_lataf, bray_afrlac)
 
 
 # Olsen afrlac
 imp_olsen_afrlac <- randomForest::importance(output_olsen_afrlac, scale=T)
 predict_olsen_afrlac <- predict(output_olsen_afrlac, data = olsen_afrlac)
 val_olsen_afrlac <- data.frame(predict_olsen_afrlac, olsen_afrlac)
-# Olsen Global - latinafrlat test
+
+# olsen global - global test
+imp_olsen_global <- randomForest::importance(output_olsen_global, scale=T)
+predict_olsen_global <- predict(output_olsen_global, data = olsen_global)
+val_olsen_global <- data.frame(predict_olsen_global, olsen_global)
+
+
+# Olsen Global - latinafrlac test
 imp_olsen_global_lataf <- randomForest::importance(output_olsen_global, scale=T)
 # making class equal
 # https://stackoverflow.com/questions/24829674/r-random-forest-error-type-of-predictors-in-new-data-do-not-match
-xtest <- rbind(olsen_global[1,], olsen_afrlat)
+xtest <- rbind(olsen_global[1,], olsen_afrlac)
 xtest <- xtest[-1,]
-predict_olsen_global_lataf <- predict(output_olsen_global, newdata = xtest[,-c(1,2)])
-val_olsen_global_lataf <- data.frame(predict_olsen_global, olsen_global)
+predict_olsen_global_lataf <- predict(output_olsen_global, newdata = xtest[,-c(1,2,17)])
+val_olsen_global_lataf <- data.frame(predict_olsen_global_lataf, olsen_afrlac)
 
 # stp afrlac
 imp_stp_afrlac <- randomForest::importance(output_stp_afrlac, scale=T)
 predict_stp_afrlac <- predict(output_stp_afrlac, data = stp_afrlac)
 val_stp_afrlac <- data.frame(predict_stp_afrlac, stp_afrlac)
 
-# stp global - latinafrlat test
+# stp global - global test
+imp_stp_global <- randomForest::importance(output_stp_global, scale=T)
+predict_stp_global <- predict(output_stp_global, data = stp_global)
+val_stp_global <- data.frame(predict_stp_global, stp_global)
+
+
+# stp global - latinafrlac test
 imp_stp_global_lataf <- randomForest::importance(output_stp_global, scale=T)
 # making class equal
 # https://stackoverflow.com/questions/24829674/r-random-forest-error-type-of-predictors-in-new-data-do-not-match
-xtest <- rbind(stp_global[1,], stp_afrlat)
+xtest <- rbind(stp_global[1,], stp_afrlac)
 xtest <- xtest[-1,]
-predict_stp_global_lataf <- predict(output_stp_global, newdata = xtest[,-c(1,2)])
-val_stp_global_lataf <- data.frame(predict_stp_global, stp_global)
+predict_stp_global_lataf <- predict(output_stp_global, newdata = xtest[,-c(1,2,18)])
+val_stp_global_lataf <- data.frame(predict_stp_global_lataf, stp_afrlac)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

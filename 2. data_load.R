@@ -262,9 +262,9 @@ stp_afrlac <- data.frame(
   ELEVATION = stp_afrlac$ELEVATION,
   BIOMES = stp_afrlac$BIOMES,
   BEDROCK = stp_afrlac$BEDROCK,
-  SOIL_TYPE = stp_afrlac$SOIL_TYPE,
+  `SOIL.TYPE` = stp_afrlac$`SOIL.TYPE`,
   DEPTH = stp_afrlac$DEPTH,
-  WRB_SOIL_TYPE = stp_afrlac$WRB_SOIL_TYPE,
+  `WRB.SOIL.TYPE` = stp_afrlac$`WRB.SOIL.TYPE`,
   mapname = map.where(database="world", 
                       stp_afrlac$LONGITUDE, stp_afrlac$LATITUDE)) %>%
   dplyr::inner_join(iso3166) %>%
@@ -276,9 +276,9 @@ table(stp_afrlac$GEO3major)
 str(stp_afrlac)
 stp_afrlac <- stp_afrlac[complete.cases(stp_afrlac), ] 
 stp_afrlac$BEDROCK <- as.factor(stp_afrlac$BEDROCK)
-stp_afrlac$SOIL_TYPE <- as.factor(stp_afrlac$SOIL_TYPE)
+stp_afrlac$`SOIL.TYPE` <- as.factor(stp_afrlac$`SOIL.TYPE`)
 stp_afrlac$BIOMES <- as.factor(stp_afrlac$BIOMES)
-stp_afrlac$WRB_SOIL_TYPE <- as.factor(stp_afrlac$WRB_SOIL_TYPE)
+stp_afrlac$`WRB.SOIL.TYPE` <- as.factor(stp_afrlac$`WRB.SOIL.TYPE`)
 stp_afrlac$GEO3major <- as.factor(stp_afrlac$GEO3major)
 
 ### Stp Global
@@ -300,9 +300,9 @@ stp_global <- data.frame(
   ELEVATION = stp_global$ELEVATION,
   BIOMES = stp_global$BIOMES,
   BEDROCK = stp_global$BEDROCK,
-  SOIL_TYPE = stp_global$SOIL_TYPE,
+  `SOIL.TYPE` = stp_global$`SOIL.TYPE`,
   DEPTH = stp_global$DEPTH,
-  WRB_SOIL_TYPE = stp_global$WRB_SOIL_TYPE,
+  `WRB.SOIL.TYPE` = stp_global$`WRB.SOIL.TYPE`,
   mapname = map.where(database="world", 
                       stp_global$LONGITUDE, stp_global$LATITUDE)) %>%
   dplyr::inner_join(iso3166) %>%
@@ -316,19 +316,18 @@ stp_afrlat <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC
 str(stp_afrlat)
 stp_afrlat <- stp_afrlat[complete.cases(stp_afrlat), ] 
 stp_afrlat$BEDROCK <- as.factor(stp_afrlat$BEDROCK)
-stp_afrlat$SOIL_TYPE <- as.factor(stp_afrlat$SOIL_TYPE)
+stp_afrlat$`SOIL.TYPE` <- as.factor(stp_afrlat$`SOIL.TYPE`)
 stp_afrlat$BIOMES <- as.factor(stp_afrlat$BIOMES)
-stp_afrlat$WRB_SOIL_TYPE <- as.factor(stp_afrlat$WRB_SOIL_TYPE)
+stp_afrlat$`WRB.SOIL.TYPE` <- as.factor(stp_afrlat$`WRB.SOIL.TYPE`)
 
 
 ### Stp Global
-stp_global <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_global.csv")
 str(stp_global)
 stp_global <- stp_global[complete.cases(stp_global), ]
 stp_global$BEDROCK <- as.factor(stp_global$BEDROCK)
-stp_global$SOIL_TYPE <- as.factor(stp_global$SOIL_TYPE)
+stp_global$`SOIL.TYPE` <- as.factor(stp_global$`SOIL.TYPE`)
 stp_global$BIOMES <- as.factor(stp_global$BIOMES)
-stp_global$WRB_SOIL_TYPE <- as.factor(stp_global$WRB_SOIL_TYPE)
+stp_global$`WRB.SOIL.TYPE` <- as.factor(stp_global$`WRB.SOIL.TYPE`)
 stp_global$GEO3major <- as.factor(stp_global$GEO3major)
 stp_global_subset <- stp_global[!stp_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 str(stp_global)
