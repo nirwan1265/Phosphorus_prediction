@@ -99,6 +99,7 @@ bray_global <- data.frame(
 table(bray_global$GEO3major)
 
 
+
 bray_afrlac <- dplyr::filter(bray_global, GEO3major %in% c("Africa", "Latin America and the Caribbean"))
 bray_afrlac <- bray_afrlac[complete.cases(bray_afrlac), ] %>% dplyr::select(-c(18:20))
 bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
@@ -243,7 +244,7 @@ olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North Americ
 
 
 ### Stp afrlac
-stp_afrlac <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
+stp_afrlac <-  read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
 colnames(stp_afrlac)
 
 # Adding country and filter by continent
@@ -312,7 +313,7 @@ stp_global <- data.frame(
 table(stp_global$GEO3major)
 
 ### Stp AfrLat
-stp_afrlat <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
+#stp_afrlat <- read.csv("data/filtered_data/P_stp_he2022_predictors_he2022_AFRLAC.csv")
 str(stp_afrlat)
 stp_afrlat <- stp_afrlat[complete.cases(stp_afrlat), ] 
 stp_afrlat$BEDROCK <- as.factor(stp_afrlat$BEDROCK)

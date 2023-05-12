@@ -1,0 +1,2 @@
+Correlation coefficient for training data: 0.6221282666611443
+Correlation coefficient for test data: 0.5638236090327604

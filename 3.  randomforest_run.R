@@ -130,6 +130,14 @@ val_stp_global_lataf <- data.frame(predict_stp_global_lataf, stp_afrlac)
 #  Correlations and MSE
 ################################################################################
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Calculate R-squared and adjusted R-squared
+# Get the predicted values from your random forest model
+predicted <- predict(output_bray_afrlac)
+
+# Calculate R-squared
+R2 <- 1 - (sum((bray_afrlac$p_avg - predicted)^2) / sum((bray_afrlac$p_avg - mean(bray_afrlac$p_avg))^2))
+# Calculate Mean Squared Error (MSE)
+MSE <- caret::RMSE(predicted, bray_afrlac$p_avg)
 
 # Bray afrlac
 cor_bray_afrlac <- cor(predict_bray_afrlac,bray_afrlac$p_avg)
