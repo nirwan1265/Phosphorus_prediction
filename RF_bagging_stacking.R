@@ -47,12 +47,15 @@ meta_data <- cbind(train_predictions, p_avg = train_data$p_avg)
 cv <- trainControl(method = "cv", number = 10)
 
 # Training the meta-model using RRF (Regularized Random Forrest) with cross-validation
+
+
+
 meta_model <- caret::train(p_avg ~ ., 
                     data = meta_data,
                     method = "RRF",
                     #trControl = trainControl(method = "none"))
                     trControl = cv)
-
+#?caret::train()
 # Renaming Testing Columns
 colnames(test_predictions) <- colnames(train_predictions)
 

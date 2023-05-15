@@ -23,7 +23,7 @@ output_bray_global<- randomForest(p_avg ~ .,
 
 
 # Olsen afrlac
-output_olsen_afrlac<- randomForest(p_avg ~ .,  
+output_olsen_afrlac_2 <- randomForest(p_avg ~ .,  
                                    ntree=500, keep.forest=T,
                                    importance=T, mtry=3, 
                                    sampsize=180,
@@ -85,8 +85,8 @@ val_bray_global_lataf <- data.frame(predict_bray_global_lataf, bray_afrlac)
 
 
 # Olsen afrlac
-imp_olsen_afrlac <- randomForest::importance(output_olsen_afrlac, scale=T)
-predict_olsen_afrlac <- predict(output_olsen_afrlac, data = olsen_afrlac)
+imp_olsen_afrlac <- randomForest::importance(output_olsen_afrlac_2, scale=T)
+predict_olsen_afrlac <- predict(output_olsen_afrlac_2, data = olsen_afrlac)
 val_olsen_afrlac <- data.frame(predict_olsen_afrlac, olsen_afrlac)
 
 # olsen global - global test

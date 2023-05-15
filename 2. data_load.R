@@ -334,3 +334,4 @@ stp_global_subset <- stp_global[!stp_global$GEO3major %in% c("North America", "E
 str(stp_global)
 
 
+

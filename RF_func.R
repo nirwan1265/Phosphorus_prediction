@@ -1,5 +1,5 @@
 run_meta_model <- function(data, sampsize) {
-  set.seed(123)  
+  #set.seed(123)  
   # Splitting data into training and testing sets
   train_indices <- sample(nrow(data), 0.7 * nrow(data))
   train_data <- data[train_indices, ]
@@ -27,7 +27,7 @@ run_meta_model <- function(data, sampsize) {
                           mtry = 3,
                           sampsize = sampsize,
                           strata = train_data$GEO3major,
-                          data = bag_data[, -c(1, 2, 17)])
+                          data = bag_data[, -c(1, 2, 18)])
     model_list[[i]] <- model
   }
   
@@ -46,12 +46,12 @@ run_meta_model <- function(data, sampsize) {
   # Cross-validation using 5 folds
   cv <- caret::trainControl(method = "cv", number = 10)
   
-  # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
-  meta_model <- caret::train(p_avg ~ ., 
+    # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
+  meta_model <- caret::train(p_avg ~ .,
                              data = meta_data,
                              method = "RRF",
                              trControl = cv)
-  
+
   # Renaming Testing Columns
   colnames(test_predictions) <- colnames(train_predictions)
   
@@ -94,13 +94,6 @@ run_meta_model <- function(data, sampsize) {
   
   return(results)
   
-  # Printing the results
-  print(paste("Correlation coefficient for training data:", train_correlation))
-  print(paste("Correlation coefficient for test data:", test_correlation))
-  print(paste("R-squared for training data:", train_r_squared))
-  print(paste("R-squared for test data:", test_r_squared))
-  print(paste("MSE for training data:", train_mse))
-  print(paste("MSE for test data:", test_mse))
 }
 
 # Bray has 18 columns 
@@ -131,6 +124,3 @@ sampsize <- 310
 output_stp_global <- run_meta_model(data, sampsize)
 
 
-colnames(olsen_global)
-colnames(bray_global)
-colnames(stp_global)
