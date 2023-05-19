@@ -63,7 +63,15 @@ for (df_name in data_frames) {
   # Assign the modified data frame back to the global environment
   assign(df_name, df, envir = .GlobalEnv)
 }
-ls()
+
+bray_35above <- bray_35above[complete.cases(bray_35above), ]
+bray_35below <- bray_35below[complete.cases(bray_35below), ]
+olsen_35above <- olsen_35above[complete.cases(olsen_35above), ]
+olsen_35below <- olsen_35below[complete.cases(olsen_35below), ]
+stp_35above <- stp_35above[complete.cases(stp_35above), ]
+stp_35below <- stp_35below[complete.cases(stp_35below), ]
+
+
 write.csv(bray_35above,"bray_35above.csv",row.names = F)
 write.csv(bray_35below,"bray_35below.csv",row.names = F)
 write.csv(olsen_35above,"olsen_35above.csv",row.names = F)
