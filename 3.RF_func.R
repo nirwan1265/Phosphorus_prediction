@@ -27,7 +27,7 @@ run_meta_model <- function(data, sampsize) {
                           mtry = 3,
                           sampsize = sampsize,
                           strata = train_data$GEO3major,
-                          data = bag_data[, -c(1, 2, 17)])
+                          data = bag_data[, -c(2,3,4)])
     model_list[[i]] <- model
   }
   
@@ -96,36 +96,29 @@ run_meta_model <- function(data, sampsize) {
   
 }
 
-# Bray has 18 columns 
-data <- bray_afrlac
+# Running the function:
+data <- bray_35above
 sampsize <- 70
-output_bray_afrlac <- run_meta_model(data, sampsize)
+output_bray_35above <- run_meta_model(data, sampsize)
 
-data <- bray_global
-sampsize <- 70
-output_bray_olsen <- run_meta_model(data, sampsize)
-
-# Bray has 18 columns
 data <- bray_35below
 sampsize <- 70
 output_bray_35below <- run_meta_model(data, sampsize)
 
-# Olsen has 17 columns, need to change the number here data = bag_data[, -c(1, 2, 18)] in RF model
-data <- olsen_afrlac
+data <- olsen_35above
 sampsize <- 180
-output_olsen_afrlac <- run_meta_model(data, sampsize)
+output_olsen_35above <- run_meta_model(data, sampsize)
 
-data <- olsen_global
+data <- olsen_35below
 sampsize <- 180
-output_olsen_global <- run_meta_model(data, sampsize)
+output_olsen_35below <- run_meta_model(data, sampsize)
 
-# Stp has 18 columns. 
-data <- stp_afrlac
+data <- stp_35above
 sampsize <- 310
-output_stp_afrlac <- run_meta_model(data, sampsize)
+output_stp_35above <- run_meta_model(data, sampsize)
 
-data <- stp_global
+data <- stp_35below
 sampsize <- 310
-output_stp_global <- run_meta_model(data, sampsize)
+output_stp_35below <- run_meta_model(data, sampsize)
 
 
