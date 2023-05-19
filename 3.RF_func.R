@@ -46,7 +46,7 @@ run_meta_model <- function(data, sampsize) {
   # Cross-validation using 5 folds
   cv <- caret::trainControl(method = "cv", number = 10)
   
-    # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
+  # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
   meta_model <- caret::train(p_avg ~ .,
                              data = meta_data,
                              method = "RRF",
