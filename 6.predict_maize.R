@@ -5,9 +5,11 @@ maize <- read.csv(paste0(dir_maize,"taxa_geoloc_pheno.csv")) %>%
     sp == "Zea mays",
     GEO3 %in% c("Caribbean", "Meso-America", "South America")
   ) %>%
-  dplyr::select(6,7)
+  dplyr::select(2,6,7)
 maize$GEO3major <- "NA"
 maize$p_avg <- 0
+rownames(maize) <- maize$Taxa
+maize <- maize[,-1]
 str(maize)
 # Separate into 35 latitude above and below
 maize_35above <- maize[which(maize$lat >= 35), ]
@@ -18,6 +20,7 @@ maize_35below$data <- "test"
 
 ### Load the training dataset
 bray <- read.csv(paste0(getwd(),"/data/P_data/bray_global.csv")) %>% dplyr::select(c(1,2,3,18))
+rownames(bray) <- seq(1:nrow(bray))
 bray_35above <- bray[which(bray$LATITUDE >= 35), ]
 bray_35below <- bray[which(bray$LATITUDE < 35), ]
 bray_35below$data <- "train"
@@ -28,7 +31,7 @@ str(maize_35below)
 # Combine them
 bray_total <- rbind(bray_35below,maize_35below)
 str(bray_total)
-
+tail(bray_total)
 
 # Loading the metamodel
 dir_meta <- "/Users/nirwantandukar/Library/Mobile Documents/com~apple~CloudDocs/Github/Phosphorus_prediction/model_RDS/"
@@ -70,40 +73,42 @@ for (raster_file in raster_files) {
 
 # Removing NA values:
 bray_total <- bray_total[complete.cases(bray_total), ]
+#bray_total$taxa <- rownames(bray_total)
+
 str(bray_total)
 table(bray_total$data)
 
 # Random forest model:
-run_meta_model <- function(data, test_data, sampsize) {
+run_meta_model <- function(data, sampsize) {
   
   # Converting columns to factors
   columns_to_factor <- c("BEDROCK", "SOIL.USDA", "BIOME", "GEO3major")
   for (column in columns_to_factor) {
     data[[column]] <- as.factor(data[[column]])
-    test_data[[column]] <- as.factor(test_data[[column]])
-  }
-  
-  # Ensuring same levels in both data and test_data
-  for (column in columns_to_factor) {
-    union_levels <- union(levels(data[[column]]), levels(test_data[[column]]))
-    data[[column]] <- factor(data[[column]], levels = union_levels)
-    test_data[[column]] <- factor(test_data[[column]], levels = union_levels)
   }
   
   # Splitting data into training and testing sets
   train_indices <- data$data == "train"
   train_data <- data[train_indices, ]
-  test_data <- rbind(data[!train_indices, ], test_data)
+  test_data <- data[!train_indices, ]
+  tail(test_data)
+  # Ensuring same levels in both train_data and test_data
+  for (column in columns_to_factor) {
+    union_levels <- levels(data[[column]])
+    train_data[[column]] <- factor(train_data[[column]], levels = union_levels)
+    test_data[[column]] <- factor(test_data[[column]], levels = union_levels)
+  }
+  
+  # Store the row names of the test data
+  test_row_names <- rownames(test_data)
   
   # Exclude unwanted columns
   exclude_cols <- c("LONGITUDE", "LATITUDE", "GEO3major", "data")
   train_data <- train_data[, !(names(train_data) %in% exclude_cols)]
   test_data <- test_data[, !(names(test_data) %in% exclude_cols)]
   
-  
-  num_models <- 15
-  
   # Required variables
+  num_models <- 15
   model_list <- list()
   train_predictions <- matrix(NA, nrow = nrow(train_data), ncol = num_models)
   test_predictions <- matrix(NA, nrow = nrow(test_data), ncol = num_models)
@@ -154,19 +159,23 @@ run_meta_model <- function(data, test_data, sampsize) {
   train_meta_predictions <- predict(meta_model, newdata = train_predictions)
   test_meta_predictions <- predict(meta_model, newdata = test_predictions)
   
+  # Adding the stored row names to the final output dataframe
+  test_prediction_final <- data.frame(Taxa = test_row_names, Predictions = as.vector(test_meta_predictions))
+  
   #### Model Performances
   # Correlation
   train_correlation <- cor(train_meta_predictions, train_data$p_avg)
-  test_correlation <- cor(test_meta_predictions, test_data$p_avg)
+  #test_correlation <- cor(test_meta_predictions, test_data$p_avg)
+  test_correlation <- "NA"
   
   # R-squared
   train_r_squared <- cor(train_meta_predictions, train_data$p_avg)^2
-  test_r_squared <- cor(test_meta_predictions, test_data$p_avg)^2
-  
+  #test_r_squared <- cor(test_meta_predictions, test_data$p_avg)^2
+  test_r_squared <- "NA"
   # MSE
   train_mse <- mean((train_meta_predictions - train_data$p_avg)^2)
-  test_mse <- mean((test_meta_predictions - test_data$p_avg)^2)
-  
+  #test_mse <- mean((test_meta_predictions - test_data$p_avg)^2)
+  test_mse <- "NA"
   # Constructing the nested list
   results <- list(
     model = model_list,
@@ -184,7 +193,8 @@ run_meta_model <- function(data, test_data, sampsize) {
         training = train_mse,
         testing = test_mse
       )
-    )
+    ),
+    Prediction = test_prediction_final
   )
   
   return(results)
@@ -193,6 +203,5 @@ run_meta_model <- function(data, test_data, sampsize) {
 
 # Running the function with your specific datasets
 data <- bray_total
-test_data <- maize_35below
 sampsize <- 70
-output_bray_35below <- run_meta_model(data, test_data, sampsize)
+output_bray_35below <- run_meta_model(data, sampsize)
