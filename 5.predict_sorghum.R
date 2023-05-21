@@ -61,31 +61,34 @@ sorghum_35below <- sorghum_35below[complete.cases(sorghum_35below), ]
 colnames(stp_35below) # from 2.data_load
 colnames(sorghum_35below)
 
-colnames(sorghum_35below) <- c("Taxa","LONGITUDE","LATITUDE","BEDROCK","BIOMES",
-                               "CLAY","NPP","DEPTH","ELEVATION","NPP","MAP","MAT",
-                               "PH","SAND","SLOPE","SOC","SOIL.TYPE","WRB.SOIL.TYPE")
+# colnames(sorghum_35below) <- c("Taxa","LONGITUDE","LATITUDE","BEDROCK","BIOMES",
+#                                "CLAY","NPP","DEPTH","ELEVATION","NPP","MAP","MAT",
+#                                "PH","SAND","SLOPE","SOC","SOIL.TYPE","WRB.SOIL.TYPE")
 row.names(sorghum_35below) <- sorghum_35below$Taxa
-sorghum_35below <- sorghum_35below[,c(2,3,16,14,6,12,11,13,10,15,9,5,4,17,8,18)]
+#sorghum_35below <- sorghum_35below[,c(2,3,16,14,6,12,11,13,10,15,9,5,4,17,8,18)]
 
 # Changing to factors
 sorghum_35below$BEDROCK <- as.factor(sorghum_35below$BEDROCK)
-sorghum_35below$`SOIL.TYPE` <- as.factor(sorghum_35below$`SOIL.TYPE`)
-sorghum_35below$BIOMES <- as.factor(sorghum_35below$BIOMES)
-sorghum_35below$`WRB.SOIL.TYPE` <- as.factor(sorghum_35below$`WRB.SOIL.TYPE`)
+sorghum_35below$`SOIL.USDA` <- as.factor(sorghum_35below$`SOIL.USDA`)
+sorghum_35below$BIOME <- as.factor(sorghum_35below$BIOME)
+sorghum_35below$`SOIL.WRB` <- as.factor(sorghum_35below$`SOIL.WRB`)
 str(sorghum_35below)
+str(stp_35below)
 
 # Predicting 15 models using bagging and stacking
 predictions_df <- data.frame()
 for (i in 1:length(meta_model_35below[["model"]])) {
   # Make predictions
-  predictions <- predict(meta_model_35below[["model"]][[i]], newdata = sorghum_35below[,-c(1,2)])
+  predictions <- predict(meta_model_35below[["model"]][[i]], newdata = sorghum_35below[,-c(1,2,3)])
   
   # Add predictions to the data frame
   predictions_df <- cbind(predictions_df, predictions)
 }
 
+
+
 names(meta_model_35below[["model"]][[i]]$forest$xlevels)
-names(sorghum_35below[,-c(1,2)])
+names(sorghum_35below[,-c(1,2,3)])
 
 
 # Create a list to store the differences

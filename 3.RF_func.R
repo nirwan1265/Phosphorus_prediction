@@ -122,3 +122,5 @@ sampsize <- 310
 output_stp_35below <- run_meta_model(data, sampsize)
 
 
+saveRDS(output_stp_35below,"output_stp_35below.RDS")
+

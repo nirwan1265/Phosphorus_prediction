@@ -41,18 +41,18 @@ table(bray_afrlac$GEO3major)
 
 str(bray_afrlac)
 bray_afrlac <- bray_afrlac[complete.cases(bray_afrlac), ] %>% dplyr::select(-c(18:20))
-bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
-bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
-bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
-bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
+# bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
+# bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
+# bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
+# bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
 
 ### Bray afrlac
 bray_afrlac <- read.csv("data/filtered_data/P_Bray_mcdowell2023_predictors_he2022_AFRLAC.csv")
 str(bray_afrlac)
 bray_afrlac <- bray_afrlac[complete.cases(bray_afrlac), ] %>% dplyr::select(-c(18:20))
-bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
-bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
-bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
+# bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
+# bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
+# bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
 
 
 #### Adding stp data:
@@ -102,19 +102,19 @@ table(bray_global$GEO3major)
 
 bray_afrlac <- dplyr::filter(bray_global, GEO3major %in% c("Africa", "Latin America and the Caribbean"))
 bray_afrlac <- bray_afrlac[complete.cases(bray_afrlac), ] %>% dplyr::select(-c(18:20))
-bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
-bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
-bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
-bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
+# bray_afrlac$BEDROCK <- as.factor(bray_afrlac$BEDROCK)
+# bray_afrlac$SOIL.TYPE <- as.factor(bray_afrlac$SOIL.TYPE)
+# bray_afrlac$BIOMES <- as.factor(bray_afrlac$BIOMES)
+# bray_afrlac$GEO3major <- as.factor(bray_afrlac$GEO3major)
 
 str(bray_global)
 bray_global <- bray_global[complete.cases(bray_global), ] %>% dplyr::select(-c(18:20))
-bray_global$BEDROCK <- as.factor(bray_global$BEDROCK)
-bray_global$SOIL.TYPE <- as.factor(bray_global$SOIL.TYPE)
-bray_global$BIOMES <- as.factor(bray_global$BIOMES)
-bray_global$GEO3major <- as.factor(bray_global$GEO3major)
-table(bray_global$GEO3major)
-bray_global_subset <- bray_global[!bray_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
+# bray_global$BEDROCK <- as.factor(bray_global$BEDROCK)
+# bray_global$SOIL.TYPE <- as.factor(bray_global$SOIL.TYPE)
+# bray_global$BIOMES <- as.factor(bray_global$BIOMES)
+# bray_global$GEO3major <- as.factor(bray_global$GEO3major)
+# table(bray_global$GEO3major)
+# bray_global_subset <- bray_global[!bray_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 
 ### Above and belo 35 latitude
 colnames(bray_global)
@@ -228,19 +228,19 @@ table(olsen_global$GEO3major)
 
 olsen_afrlac <- dplyr::filter(olsen_global, GEO3major %in% c("Africa", "Latin America and the Caribbean"))
 olsen_afrlac <- olsen_afrlac[complete.cases(olsen_afrlac), ] %>% dplyr::select(-c(17:19))
-olsen_afrlac$BEDROCK <- as.factor(olsen_afrlac$BEDROCK)
-olsen_afrlac$SOIL.TYPE <- as.factor(olsen_afrlac$SOIL.TYPE)
-olsen_afrlac$BIOMES <- as.factor(olsen_afrlac$BIOMES)
-olsen_afrlac$GEO3major <- as.factor(olsen_afrlac$GEO3major)
+# olsen_afrlac$BEDROCK <- as.factor(olsen_afrlac$BEDROCK)
+# olsen_afrlac$SOIL.TYPE <- as.factor(olsen_afrlac$SOIL.TYPE)
+# olsen_afrlac$BIOMES <- as.factor(olsen_afrlac$BIOMES)
+# olsen_afrlac$GEO3major <- as.factor(olsen_afrlac$GEO3major)
 
 
 str(olsen_global)
 olsen_global <- olsen_global[complete.cases(olsen_global), ] %>% dplyr::select(-c(17:19))
-olsen_global$BEDROCK <- as.factor(olsen_global$BEDROCK)
-olsen_global$SOIL.TYPE <- as.factor(olsen_global$SOIL.TYPE)
-olsen_global$BIOMES <- as.factor(olsen_global$BIOMES)
-olsen_global$GEO3major <- as.factor(olsen_global$GEO3major)
-olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
+# olsen_global$BEDROCK <- as.factor(olsen_global$BEDROCK)
+# olsen_global$SOIL.TYPE <- as.factor(olsen_global$SOIL.TYPE)
+# olsen_global$BIOMES <- as.factor(olsen_global$BIOMES)
+# olsen_global$GEO3major <- as.factor(olsen_global$GEO3major)
+# olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
 
 ### Above and belo 35 latitude
 colnames(olsen_global)
