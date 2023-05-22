@@ -204,8 +204,9 @@ run_meta_model <- function(data, sampsize) {
   
 }
 
-saveRDS(results,"bray_total_35below.RDS")
-write.csv(results[["Prediction"]], "bray_total_35below.csv", row.names = F)
+saveRDS(results,"bray_total_35below_sorghum.RDS")
+write.csv(results[["Prediction"]], "bray_total_35below_sorghum.csv", row.names = F)
+
 # Running the function with your specific datasets
 data <- bray_total_35below
 sampsize <- 70
