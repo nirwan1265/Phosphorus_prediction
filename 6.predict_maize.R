@@ -29,9 +29,9 @@ str(maize_35below)
 
 
 # Combine them
-bray_total <- rbind(bray_35below,maize_35below)
-str(bray_total)
-tail(bray_total)
+bray_total_35below <- rbind(bray_35below,maize_35below)
+str(bray_total_35below)
+tail(bray_total_35below)
 
 # Loading the metamodel
 dir_meta <- "/Users/nirwantandukar/Library/Mobile Documents/com~apple~CloudDocs/Github/Phosphorus_prediction/model_RDS/"
@@ -64,19 +64,19 @@ for (raster_file in raster_files) {
   var_name <- gsub("\\.tif$", "", basename(raster_file))
   
   # Extract values for all coordinates in the pheno maize_35below frame
-  extracted_values <- extract_raster_values(raster_file, bray_total)
+  extracted_values <- extract_raster_values(raster_file, bray_total_35below)
   
   # Add the extracted values as a new column in the pheno maize_35below frame
-  bray_total[[var_name]] <- extracted_values
+  bray_total_35below[[var_name]] <- extracted_values
 }
 
 
 # Removing NA values:
-bray_total <- bray_total[complete.cases(bray_total), ]
-#bray_total$taxa <- rownames(bray_total)
+bray_total_35below <- bray_total_35below[complete.cases(bray_total_35below), ]
+#bray_total_35below$taxa <- rownames(bray_total_35below)
 
-str(bray_total)
-table(bray_total$data)
+str(bray_total_35below)
+table(bray_total_35below$data)
 
 # Random forest model:
 run_meta_model <- function(data, sampsize) {
@@ -144,7 +144,7 @@ run_meta_model <- function(data, sampsize) {
   meta_data <- cbind(train_predictions, p_avg = train_data$p_avg)
   
   # Cross-validation using 5 folds
-  cv <- caret::trainControl(method = "cv", number = 10)
+  cv <- caret::trainControl(method = "cv", number = 5)
   
   # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
   meta_model <- caret::train(p_avg ~ .,
@@ -202,6 +202,6 @@ run_meta_model <- function(data, sampsize) {
 }
 
 # Running the function with your specific datasets
-data <- bray_total
+data <- bray_total_35below
 sampsize <- 70
 output_bray_35below <- run_meta_model(data, sampsize)

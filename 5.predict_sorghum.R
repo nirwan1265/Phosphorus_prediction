@@ -6,19 +6,40 @@ sorghum <- read.csv(paste0(dir_sorghum,"taxa_geoloc_pheno.csv")) %>%
     GEO3 %in% c("Central Africa", "Eastern Africa", "North Africa", "Southern Africa", "Western Africa")
   ) %>%
   dplyr::select(2,6,7)
+sorghum$GEO3major <- "NA"
+sorghum$p_avg <- 0
+rownames(sorghum) <- sorghum$Taxa
+sorghum <- sorghum[,-1]
+str(sorghum)
 
 
 # Separate into 35 latitude above and below
 sorghum_35above <- sorghum[which(sorghum$lat >= 35), ]
-colnames(sorghum_35above) <- c("Taxa","Long","Lat")
+colnames(sorghum_35above) <- c("LONGITUDE","LATITUDE","GEO3major","p_avg")
 sorghum_35below <- sorghum[which(sorghum$lat < 35), ]
-colnames(sorghum_35below) <- c("Taxa","Long","Lat")
+colnames(sorghum_35below) <- c("LONGITUDE","LATITUDE","GEO3major","p_avg")
+sorghum_35below$data <- "test"
 
+
+### Load the training dataset
+bray <- read.csv(paste0(getwd(),"/data/P_data/bray_global.csv")) %>% dplyr::select(c(1,2,3,18))
+rownames(bray) <- seq(1:nrow(bray))
+bray_35above <- bray[which(bray$LATITUDE >= 35), ]
+bray_35below <- bray[which(bray$LATITUDE < 35), ]
+bray_35below$data <- "train"
+str(bray_35below)
+str(sorghum_35below)
+
+
+# Combine them
+bray_total_35below <- rbind(bray_35below,sorghum_35below)
+str(bray_total_35below)
+tail(bray_total_35below)
 
 # Loading the metamodel
 dir_meta <- "/Users/nirwantandukar/Library/Mobile Documents/com~apple~CloudDocs/Github/Phosphorus_prediction/model_RDS/"
-meta_model_35above <- readRDS(paste0(dir_meta,"output_stp_35above.RDS"))
-meta_model_35below <- readRDS(paste0(dir_meta,"output_stp_35below.RDS"))
+#meta_model_35above <- readRDS(paste0(dir_meta,"output_stp_35above.RDS"))
+#meta_model_35below <- readRDS(paste0(dir_meta,"output_stp_35below.RDS"))
 
 
 # Extracting the values of predictors from the raster files
@@ -31,7 +52,7 @@ raster_files <- list.files(path = dir_raster, pattern = "\\.tif$", full.names = 
 extract_raster_values <- function(raster_file, df) {
   r <- raster::brick(raster_file)
   
-  coords <- df[, c("Long", "Lat")]
+  coords <- df[, c("LONGITUDE", "LATITUDE")]
   coords_sp <- sp::SpatialPoints(coords, proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
   coords_transformed <- sp::spTransform(coords_sp, crs(r))
   
@@ -46,68 +67,146 @@ for (raster_file in raster_files) {
   var_name <- gsub("\\.tif$", "", basename(raster_file))
   
   # Extract values for all coordinates in the pheno sorghum_35below frame
-  extracted_values <- extract_raster_values(raster_file, sorghum_35below)
+  extracted_values <- extract_raster_values(raster_file, bray_total_35below)
   
   # Add the extracted values as a new column in the pheno sorghum_35below frame
-  sorghum_35below[[var_name]] <- extracted_values
+  bray_total_35below[[var_name]] <- extracted_values
 }
 
 
 # Removing NA values:
-sorghum_35below <- sorghum_35below[complete.cases(sorghum_35below), ]
+bray_total_35below <- bray_total_35below[complete.cases(bray_total_35below), ]
+#bray_total_35below$taxa <- rownames(bray_total_35below)
 
+str(bray_total_35below)
+table(bray_total_35below$data)
 
-# Reording columns and column names to match the original data used for prediction
-colnames(stp_35below) # from 2.data_load
-colnames(sorghum_35below)
-
-# colnames(sorghum_35below) <- c("Taxa","LONGITUDE","LATITUDE","BEDROCK","BIOMES",
-#                                "CLAY","NPP","DEPTH","ELEVATION","NPP","MAP","MAT",
-#                                "PH","SAND","SLOPE","SOC","SOIL.TYPE","WRB.SOIL.TYPE")
-row.names(sorghum_35below) <- sorghum_35below$Taxa
-#sorghum_35below <- sorghum_35below[,c(2,3,16,14,6,12,11,13,10,15,9,5,4,17,8,18)]
-
-# Changing to factors
-sorghum_35below$BEDROCK <- as.factor(sorghum_35below$BEDROCK)
-sorghum_35below$`SOIL.USDA` <- as.factor(sorghum_35below$`SOIL.USDA`)
-sorghum_35below$BIOME <- as.factor(sorghum_35below$BIOME)
-sorghum_35below$`SOIL.WRB` <- as.factor(sorghum_35below$`SOIL.WRB`)
-str(sorghum_35below)
-str(stp_35below)
-
-# Predicting 15 models using bagging and stacking
-predictions_df <- data.frame()
-for (i in 1:length(meta_model_35below[["model"]])) {
-  # Make predictions
-  predictions <- predict(meta_model_35below[["model"]][[i]], newdata = sorghum_35below[,-c(1,2,3)])
+# Random forest model:
+run_meta_model <- function(data, sampsize) {
   
-  # Add predictions to the data frame
-  predictions_df <- cbind(predictions_df, predictions)
-}
-
-
-
-names(meta_model_35below[["model"]][[i]]$forest$xlevels)
-names(sorghum_35below[,-c(1,2,3)])
-
-
-# Create a list to store the differences
-differences <- list()
-
-# Loop over the factor variables
-for(var_name in names(sorghum_35below)[sapply(sorghum_35below, is.factor)]) {
-  training_levels <- levels(meta_model_35below[["model"]][[i]]$forest$xlevels[[var_name]])
-  newdata_levels <- levels(sorghum_35below[[var_name]])
-  
-  # Find levels present in newdata but not in training data
-  diff_levels <- setdiff(newdata_levels, training_levels)
-  
-  # If there are any such levels, store them in the list
-  if(length(diff_levels) > 0) {
-    differences[[var_name]] <- diff_levels
+  # Converting columns to factors
+  columns_to_factor <- c("BEDROCK", "SOIL.USDA", "BIOME", "GEO3major")
+  for (column in columns_to_factor) {
+    data[[column]] <- as.factor(data[[column]])
   }
+  
+  # Splitting data into training and testing sets
+  train_indices <- data$data == "train"
+  train_data <- data[train_indices, ]
+  test_data <- data[!train_indices, ]
+  tail(test_data)
+  # Ensuring same levels in both train_data and test_data
+  for (column in columns_to_factor) {
+    union_levels <- levels(data[[column]])
+    train_data[[column]] <- factor(train_data[[column]], levels = union_levels)
+    test_data[[column]] <- factor(test_data[[column]], levels = union_levels)
+  }
+  
+  # Store the row names of the test data
+  test_row_names <- rownames(test_data)
+  
+  # Exclude unwanted columns
+  exclude_cols <- c("LONGITUDE", "LATITUDE", "GEO3major", "data")
+  train_data <- train_data[, !(names(train_data) %in% exclude_cols)]
+  test_data <- test_data[, !(names(test_data) %in% exclude_cols)]
+  
+  # Required variables
+  num_models <- 15
+  model_list <- list()
+  train_predictions <- matrix(NA, nrow = nrow(train_data), ncol = num_models)
+  test_predictions <- matrix(NA, nrow = nrow(test_data), ncol = num_models)
+  
+  # Train individual models in the ensemble
+  for (i in 1:num_models) {
+    # Bagging (Bootstrap aggregating) - random subset of training data
+    bag_indices <- sample(nrow(train_data), replace = TRUE)
+    bag_data <- train_data[bag_indices, ]
+    
+    # Random forest model with starta and sampsize
+    model <- randomForest(p_avg ~ .,  
+                          ntree = 200,
+                          keep.forest = TRUE,
+                          importance = TRUE,
+                          mtry = 3,
+                          sampsize = sampsize,
+                          strata = train_data$GEO3major,
+                          data = bag_data)
+    model_list[[i]] <- model
+  }
+  
+  # Predictions for each individual model
+  for (i in 1:num_models) {
+    train_predictions[, i] <- predict(model_list[[i]], newdata = train_data)
+    test_predictions[, i] <- predict(model_list[[i]], newdata = test_data)
+  }
+  
+  # Renaming Training Columns
+  colnames(train_predictions) <- paste("Model", 1:num_models)
+  
+  # Combining Predictions and Actual Values to create meta-data
+  meta_data <- cbind(train_predictions, p_avg = train_data$p_avg)
+  
+  # Cross-validation using 5 folds
+  cv <- caret::trainControl(method = "cv", number = 2)
+  
+  # Training the meta-model using RRF (Regularized Random Forest) with cross-validation
+  meta_model <- caret::train(p_avg ~ .,
+                             data = meta_data,
+                             method = "RRF",
+                             trControl = cv)
+  
+  # Renaming Testing Columns
+  colnames(test_predictions) <- colnames(train_predictions)
+  
+  # Meta-predictions for the training and test sets from staking
+  train_meta_predictions <- predict(meta_model, newdata = train_predictions)
+  test_meta_predictions <- predict(meta_model, newdata = test_predictions)
+  
+  # Adding the stored row names to the final output dataframe
+  test_prediction_final <- data.frame(Taxa = test_row_names, Predictions = as.vector(test_meta_predictions))
+  
+  #### Model Performances
+  # Correlation
+  train_correlation <- cor(train_meta_predictions, train_data$p_avg)
+  #test_correlation <- cor(test_meta_predictions, test_data$p_avg)
+  test_correlation <- "NA"
+  
+  # R-squared
+  train_r_squared <- cor(train_meta_predictions, train_data$p_avg)^2
+  #test_r_squared <- cor(test_meta_predictions, test_data$p_avg)^2
+  test_r_squared <- "NA"
+  # MSE
+  train_mse <- mean((train_meta_predictions - train_data$p_avg)^2)
+  #test_mse <- mean((test_meta_predictions - test_data$p_avg)^2)
+  test_mse <- "NA"
+  # Constructing the nested list
+  results <- list(
+    model = model_list,
+    meta_model = meta_model,
+    model_performance = list(
+      correlation = list(
+        training = train_correlation,
+        testing = test_correlation
+      ),
+      r_squared = list(
+        training = train_r_squared,
+        testing = test_r_squared
+      ),
+      mse = list(
+        training = train_mse,
+        testing = test_mse
+      )
+    ),
+    Prediction = test_prediction_final
+  )
+  
+  return(results)
+  
 }
 
-# Print the differences
-print(differences)
-
+saveRDS(results,"bray_total_35below.RDS")
+write.csv(results[["Prediction"]], "bray_total_35below.csv", row.names = F)
+# Running the function with your specific datasets
+data <- bray_total_35below
+sampsize <- 70
+output_bray_35below <- run_meta_model(data, sampsize)
