@@ -70,7 +70,7 @@ for (raster_file in raster_files) {
   bray_total_35below[[var_name]] <- extracted_values
 }
 
-
+dir_pheno=paste0(getwd(),"/predicted_pheno")
 # Removing NA values:
 bray_total_35below <- bray_total_35below[complete.cases(bray_total_35below), ]
 #bray_total_35below$taxa <- rownames(bray_total_35below)
