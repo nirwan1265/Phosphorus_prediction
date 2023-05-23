@@ -44,33 +44,11 @@ for (i in 1:num_models) {
   test_correlations[i] <- cor(test_predictions[, i], test_data$p_avg)
   
 }
+
 # Create a data frame for correlations
 correlation_df <- data.frame(Model = 1:num_models, 
                              Train_Correlation = train_correlations, 
                              Test_Correlation = test_correlations)
-library(ggplot2)
-# Create a plot for training correlations
-ggplot(correlation_df, aes(x = Model, y = Train_Correlation)) +
-  geom_point() +
-  geom_line() +
-  labs(title = "Training Correlations", x = "Model Number", y = "Correlation") 
-# Create a plot for testing correlations
-ggplot(correlation_df, aes(x = Model, y = Test_Correlation)) +
-  geom_point() +
-  geom_line() +
-  labs(title = "Testing Correlations", x = "Model Number", y = "Correlation") 
-
-library(tidyverse)
-
-# Reshape the data
-correlation_df_long <- correlation_df %>% gather(key = "Type", value = "Correlation", Train_Correlation, Test_Correlation)
-
-# Create a combined plot
-ggplot(correlation_df_long, aes(x = Model, y = Correlation, color = Type)) +
-  geom_point() +
-  geom_line() +
-  labs(title = "Training and Testing Correlations", x = "Model Number", y = "Correlation") 
-
 
 
 # Getting the ENSEMBLE training data
@@ -80,24 +58,28 @@ min_model <- min(correlation_df$Model)
 max_model <- max(correlation_df$Model)
 
 x <- ggplot(correlation_df, aes(x = Model)) +
-  geom_point(aes(y = Train_Correlation, color = "Train")) +
+  geom_point(aes(y = Train_Correlation, color = "Train"), size = 5) +
   geom_line(aes(y = Train_Correlation, color = "Train")) +
-  geom_point(aes(y = Test_Correlation, color = "Test")) +
+  geom_point(aes(y = Test_Correlation, color = "Test"), size = 5) +
   geom_line(aes(y = Test_Correlation, color = "Test")) +
   geom_hline(aes(yintercept = ensemble_correlation), linetype = "dashed", color = "black") +
   annotate("segment", x = -Inf, xend = Inf, y = ensemble_correlation, yend = ensemble_correlation,
            colour = "black", linetype = "dashed") +
   geom_blank(aes(y = 0, color = "Ensemble Model")) +
-  labs(title = "Bray Phosphorus Prediction using Random Forest", x = "Model Number", y = "Correlation") +
+  labs(title = "Bray Phosphorus Prediction", x = "Model Number", y = "Correlation") +
   scale_color_manual(values = c("Train" = "blue", "Test" = "red", "Ensemble Model" = "black"), 
                      name = "Legends",
                      labels = c("Ensemble Model","Test", "Train")) +
-  scale_y_continuous(limits = c(0.3, max(ensemble_correlation, max(correlation_df$Train_Correlation, correlation_df$Test_Correlation)))) +
+  scale_y_continuous(limits = c(0.35, max(ensemble_correlation, max(correlation_df$Train_Correlation, correlation_df$Test_Correlation)))) +
   scale_x_continuous(breaks = seq(from = min_model, to = max_model, by = 2)) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
+  theme_minimal(base_size=30) +
+  theme(legend.position = "top")
+
+
 y <- x + scale_y_break(breaks = c(0.45,0.7), scales = "fixed", expand = T,space = 0.1,ticklabels = c(0.73,0.76,0.79))
-y
+quartz()
+x
+
 dev.off()
-ggsave("my_plot.png", plot = y, width = 10, height = 6, dpi = 300)
+ggsave("my_plot.png", plot = x, width = 10, height = 6, dpi = 300)
 y
