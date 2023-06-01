@@ -97,12 +97,6 @@ bray_combined_data_35above <- bray_combined_data_35above[complete.cases(bray_com
 #write.csv(bray_combined_data_35below,"bray_combined_data_35below.csv",row.names =F)
 #write.csv(bray_combined_data_35above,"bray_combined_data_35above.csv",row.names =F)
 
-# Running the model:
-data <- bray_combined_data_35below
-sampsize <- 20
-output_bray_35below_mpti <- run_meta_model(data, sampsize)
-
-
 
 
 ####### Using previous model
@@ -112,6 +106,7 @@ dir_meta <- "/Users/nirwantandukar/Library/Mobile Documents/com~apple~CloudDocs/
 meta_model <- readRDS(paste0(dir_meta,"bray_total_35below.RDS"))
 
 data <- bray_combined_data_35below
+sampsize <- 70
 
 columns_to_factor <- c("BEDROCK", "SOIL.USDA", "BIOME", "GEO3major")
 for (column in columns_to_factor) {
