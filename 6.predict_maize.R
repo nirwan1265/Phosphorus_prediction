@@ -205,3 +205,87 @@ run_meta_model <- function(data, sampsize) {
 data <- bray_total_35below
 sampsize <- 70
 output_bray_35below <- run_meta_model(data, sampsize)
+
+
+
+
+##### Making a map for USA:
+# Define the extent of USA (approximately)
+xmin <- -125
+xmax <- -67
+ymin <- 24.5
+ymax <- 49.5
+
+# Define the resolution
+res <- 0.1  # approximately 10 km
+
+# Generate the grid
+longs <- seq(from = xmin, to = xmax, by = res)
+lats <- seq(from = ymin, to = ymax, by = res)
+
+# Create a data frame of all combinations of longitudes and latitudes
+grid <- expand.grid(longitude = longs, latitude = lats)
+
+
+# North Carolina
+# Define the extent of North Carolina (approximately)
+xmin <- -84.3
+xmax <- -75.5
+ymin <- 33.8
+ymax <- 36.6
+
+# Define the resolution
+res <- 0.1  # approximately 10 km
+
+# Generate the grid
+longs <- seq(from = xmin, to = xmax, by = res)
+lats <- seq(from = ymin, to = ymax, by = res)
+
+# Create a data frame of all combinations of longitudes and latitudes
+grid <- expand.grid(longitude = longs, latitude = lats)
+
+# Initialize an empty data frame
+new_data <- data.frame()
+
+# Loop over each combination of longitude and latitude
+for (i in 1:nrow(grid)) {
+  # Extract the longitude and latitude
+  lon <- grid$longitude[i]
+  lat <- grid$latitude[i]
+  
+  # Create a temporary data frame
+  temp_data <- data.frame(LONGITUDE = lon, LATITUDE = lat)
+  
+  # Loop over each raster file
+  for (raster_file in raster_files) {
+    # Get the variable name from the file name
+    var_name <- gsub("\\.tif$", "", basename(raster_file))
+    
+    # Extract values for the current coordinates
+    extracted_values <- extract_raster_values(raster_file, temp_data)
+    
+    # Add the extracted values as a new column in the temp_data frame
+    temp_data[[var_name]] <- extracted_values
+  }
+  
+  # Add the temp_data frame to the new_data frame
+  new_data <- rbind(new_data, temp_data)
+}
+new_data <- new_data[complete.cases(new_data), ]
+
+
+# Run the random forest model
+rf_results <- run_meta_model(new_data, sampsize)
+
+# Get the predictions
+predicted_values <- rf_results$Prediction$Predictions
+
+# Create a new raster
+new_raster <- raster1
+
+# Replace the raster values with the predicted values
+new_raster[] <- predicted_values
+
+# Write the new raster to a new GeoTIFF file
+writeRaster(new_raster, filename = "new_raster.tif", format = "GTiff", overwrite = TRUE)
+
