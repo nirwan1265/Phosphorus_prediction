@@ -24,6 +24,7 @@ rownames(bray) <- seq(1:nrow(bray))
 bray_35above <- bray[which(bray$LATITUDE >= 35), ]
 bray_35below <- bray[which(bray$LATITUDE < 35), ]
 bray_35below$data <- "train"
+bray_35above$data <- "train"
 str(bray_35below)
 str(maize_35below)
 
@@ -70,6 +71,17 @@ for (raster_file in raster_files) {
   bray_total_35below[[var_name]] <- extracted_values
 }
 
+for (raster_file in raster_files) {
+  # Get the variable name from the file name
+  var_name <- gsub("\\.tif$", "", basename(raster_file))
+  
+  # Extract values for all coordinates in the pheno maize_35below frame
+  extracted_values <- extract_raster_values(raster_file, bray_total_35below)
+  
+  # Add the extracted values as a new column in the pheno maize_35below frame
+  bray_total_35above[[var_name]] <- extracted_values
+}
+
 dir_pheno=paste0(getwd(),"/predicted_pheno")
 # Removing NA values:
 bray_total_35below <- bray_total_35below[complete.cases(bray_total_35below), ]
@@ -78,6 +90,11 @@ bray_total_35below <- bray_total_35below[complete.cases(bray_total_35below), ]
 str(bray_total_35below)
 table(bray_total_35below$data)
 
+
+### NOTE:
+#Need a df with column data with training and testing data:
+#####
+  
 # Random forest model:
 run_meta_model <- function(data, sampsize) {
   
@@ -91,7 +108,7 @@ run_meta_model <- function(data, sampsize) {
   train_indices <- data$data == "train"
   train_data <- data[train_indices, ]
   test_data <- data[!train_indices, ]
-  tail(test_data)
+  
   # Ensuring same levels in both train_data and test_data
   for (column in columns_to_factor) {
     union_levels <- levels(data[[column]])
