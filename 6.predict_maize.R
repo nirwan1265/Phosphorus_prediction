@@ -259,43 +259,138 @@ longs <- seq(from = xmin, to = xmax, by = res)
 lats <- seq(from = ymin, to = ymax, by = res)
 
 # Create a data frame of all combinations of longitudes and latitudes
-grid <- expand.grid(longitude = longs, latitude = lats)
+grid <- expand.grid(LONGITUDE = longs, LATITUDE = lats)
 
 # Initialize an empty data frame
 new_data <- data.frame()
 
 # Loop over each combination of longitude and latitude
-for (i in 1:nrow(grid)) {
-  # Extract the longitude and latitude
-  lon <- grid$longitude[i]
-  lat <- grid$latitude[i]
+for (raster_file in raster_files) {
+  # Get the variable name from the file name
+  var_name <- gsub("\\.tif$", "", basename(raster_file))
   
-  # Create a temporary data frame
-  temp_data <- data.frame(LONGITUDE = lon, LATITUDE = lat)
+  # Extract values for all coordinates in the pheno maize_35below frame
+  extracted_values <- extract_raster_values(raster_file, grid)
   
-  # Loop over each raster file
-  for (raster_file in raster_files) {
-    # Get the variable name from the file name
-    var_name <- gsub("\\.tif$", "", basename(raster_file))
-    
-    # Extract values for the current coordinates
-    extracted_values <- extract_raster_values(raster_file, temp_data)
-    
-    # Add the extracted values as a new column in the temp_data frame
-    temp_data[[var_name]] <- extracted_values
-  }
-  
-  # Add the temp_data frame to the new_data frame
-  new_data <- rbind(new_data, temp_data)
+  # Add the extracted values as a new column in the pheno maize_35below frame
+  grid[[var_name]] <- extracted_values
 }
+
+
+# for (i in 1:nrow(grid)) {
+#   # Extract the longitude and latitude
+#   lon <- grid$longitude[i]
+#   lat <- grid$latitude[i]
+#   
+#   # Create a temporary data frame
+#   temp_data <- data.frame(LONGITUDE = lon, LATITUDE = lat)
+#   
+#   # Loop over each raster file
+#   for (raster_file in raster_files) {
+#     # Get the variable name from the file name
+#     var_name <- gsub("\\.tif$", "", basename(raster_file))
+#     
+#     # Extract values for the current coordinates
+#     extracted_values <- extract_raster_values(raster_file, temp_data)
+#     
+#     # Add the extracted values as a new column in the temp_data frame
+#     temp_data[[var_name]] <- extracted_values
+#   }
+#   
+#   # Add the temp_data frame to the new_data frame
+#   new_data <- rbind(new_data, temp_data)
+# }
+new_data <- grid
 new_data <- new_data[complete.cases(new_data), ]
 
 
-# Run the random forest model
-rf_results <- run_meta_model(new_data, sampsize)
+####### Using previous model
 
-# Get the predictions
-predicted_values <- rf_results$Prediction$Predictions
+# Loading the metamodel
+dir_meta <- "/Users/nirwantandukar/Library/Mobile Documents/com~apple~CloudDocs/Github/Phosphorus_prediction/model_RDS/"
+meta_model <- readRDS(paste0(dir_meta,"bray_total_35below.RDS"))
+
+data <- new_data
+sampsize <- 70
+
+columns_to_factor <- c("BEDROCK", "SOIL.USDA", "BIOME", "GEO3major")
+for (column in columns_to_factor) {
+  data[[column]] <- as.factor(data[[column]])
+}
+
+# Splitting data into training and testing sets
+train_indices <- data$data == "train"
+train_data <- data[train_indices, ]
+test_data <- data[!train_indices, ]
+
+# Ensuring same levels in both train_data and test_data
+for (column in columns_to_factor) {
+  union_levels <- levels(data[[column]])
+  train_data[[column]] <- factor(train_data[[column]], levels = union_levels)
+  test_data[[column]] <- factor(test_data[[column]], levels = union_levels)
+}
+
+# Store the row names of the test data
+test_row_names <- rownames(test_data)
+
+# Exclude unwanted columns
+exclude_cols <- c("LONGITUDE", "LATITUDE", "GEO3major", "data")
+train_data <- train_data[, !(names(train_data) %in% exclude_cols)]
+test_data <- test_data[, !(names(test_data) %in% exclude_cols)]
+
+
+# Required variables
+num_models <- 15
+model_list <- list()
+train_predictions <- matrix(NA, nrow = nrow(train_data), ncol = num_models)
+test_predictions <- matrix(NA, nrow = nrow(test_data), ncol = num_models)
+
+# Train individual models in the ensemble
+for (i in 1:num_models) {
+  # Bagging (Bootstrap aggregating) - random subset of training data
+  bag_indices <- sample(nrow(train_data), replace = TRUE)
+  bag_data <- train_data[bag_indices, ]
+  
+  # Random forest model with starta and sampsize
+  model <- randomForest(p_avg ~ .,  
+                        ntree = 200,
+                        keep.forest = TRUE,
+                        importance = TRUE,
+                        mtry = 3,
+                        sampsize = sampsize,
+                        strata = train_data$GEO3major,
+                        data = bag_data)
+  model_list[[i]] <- model
+}
+
+# Predictions for each individual model
+for (i in 1:num_models) {
+  train_predictions[, i] <- predict(model_list[[i]], newdata = train_data)
+  test_predictions[, i] <- predict(model_list[[i]], newdata = test_data)
+}
+colnames(test_predictions) <- c("Model 1","Model 2","Model 3","Model 4","Model 5",
+                                "Model 6","Model 7","Model 8","Model 9","Model 10",
+                                "Model 11","Model 12","Model 13","Model 14","Model 15")
+
+
+
+
+# Meta-predictions for the training and test sets from staking
+test_meta_predictions <- as.data.frame(predict(meta_model[["meta_model"]], newdata = test_predictions))
+test_meta_predictions$ID <- test_row_names
+test_meta_predictions <- test_meta_predictions[,c(2,1)]
+colnames(test_meta_predictions)[2] <- "p_avg"
+
+# Combining with previous values:
+combined_data_35below$ID <- rownames(combined_data_35below)
+final_df <- inner_join(test_meta_predictions,combined_data_35below, by = "ID")
+
+
+
+
+
+
+
 
 # Create a new raster
 new_raster <- raster1
