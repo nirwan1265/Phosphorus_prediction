@@ -353,3 +353,67 @@ str(stp_global)
 
 
 
+
+######################
+# NEW DATA
+
+
+### Bray Global
+olsen_global <- read.csv("data/new_data_with_mexico/to_rf.csv")
+str(olsen_global)
+colnames(olsen_global)
+# Adding country and filter by continent
+olsen_global <- data.frame( 
+  LONGITUDE = olsen_global$LONGITUDE,
+  LATITUDE = olsen_global$LATITUDE,
+  p_avg = olsen_global$OLSEN,
+  #ID = olsen_global$N,
+  SOC = olsen_global$SOC,
+  MAT = olsen_global$MAT,
+  MAP= olsen_global$MAP,
+  SAND = olsen_global$SAND,
+  CLAY = olsen_global$CLAY,
+  PH = olsen_global$PH,
+  BEDROCK = olsen_global$BEDROCK,
+  `SOIL.TYPE` = olsen_global$`SOIL.TYPE`,
+  DEPTH = olsen_global$DEPTH,
+  NPP = olsen_global$NPP,
+  SLOPE = olsen_global$SLOPE,
+  ELEVATION = olsen_global$ELEVATION,
+  #BIOMES = olsen_global$BIOMES,
+  #EROIDX = olsen_global$EROIDX,
+  #TCEQ = olsen_global$TCEQ,
+  #CACO3 = olsen_global$CACO3,
+  mapname = map.where(database="world", 
+                      olsen_global$LONGITUDE, olsen_global$LATITUDE)) %>%
+  dplyr::inner_join(iso3166) %>%
+  dplyr::inner_join(countryRegions, by =c("a3"="ISO3")) %>%
+  dplyr::select(c(1:15,"GEO3major"))
+table(olsen_global$GEO3major)
+
+
+
+olsen_afrlac <- dplyr::filter(olsen_global, GEO3major %in% c("Africa", "Latin America and the Caribbean"))
+olsen_afrlac <- olsen_afrlac[complete.cases(olsen_afrlac), ]
+# olsen_afrlac$BEDROCK <- as.factor(olsen_afrlac$BEDROCK)
+# olsen_afrlac$SOIL.TYPE <- as.factor(olsen_afrlac$SOIL.TYPE)
+# olsen_afrlac$BIOMES <- as.factor(olsen_afrlac$BIOMES)
+# olsen_afrlac$GEO3major <- as.factor(olsen_afrlac$GEO3major)
+
+str(olsen_global)
+olsen_global <- olsen_global[complete.cases(olsen_global), ]
+# olsen_global$BEDROCK <- as.factor(olsen_global$BEDROCK)
+# olsen_global$SOIL.TYPE <- as.factor(olsen_global$SOIL.TYPE)
+# olsen_global$BIOMES <- as.factor(olsen_global$BIOMES)
+# olsen_global$GEO3major <- as.factor(olsen_global$GEO3major)
+# table(olsen_global$GEO3major)
+# olsen_global_subset <- olsen_global[!olsen_global$GEO3major %in% c("North America", "Europe", "West Asia"), ]
+
+### Above and belo 35 latitude
+colnames(olsen_global)
+olsen_35above <- olsen_global[which(olsen_global$LATITUDE >= 35), ]
+olsen_35below <- olsen_global[which(olsen_global$LATITUDE < 35), ]
+
+write.csv(olsen_35above,"data/new_data_with_mexico/olsen_35above.csv", row.names = F)
+write.csv(olsen_35below,"data/new_data_with_mexico/olsen_35below.csv", row.names = F)
+

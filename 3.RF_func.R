@@ -27,7 +27,8 @@ run_meta_model <- function(data, sampsize) {
                           mtry = 3,
                           sampsize = sampsize,
                           strata = train_data$GEO3major,
-                          data = bag_data[, -c(2,3,4)])
+                          #data = bag_data[, -c(2,3,4)])
+                          data = bag_data[, -c(1,2)])
     model_list[[i]] <- model
   }
   
@@ -122,5 +123,5 @@ sampsize <- 310
 output_stp_35below <- run_meta_model(data, sampsize)
 
 
-saveRDS(output_stp_35below,"output_stp_35below.RDS")
+saveRDS(output_olsen_35below,"output_olsen_35below_newdata_mexico_added.RDS")
 

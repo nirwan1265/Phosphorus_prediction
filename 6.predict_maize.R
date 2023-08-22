@@ -25,6 +25,7 @@ bray_35above <- bray[which(bray$LATITUDE >= 35), ]
 bray_35below <- bray[which(bray$LATITUDE < 35), ]
 bray_35below$data <- "train"
 bray_35above$data <- "train"
+
 str(bray_35below)
 str(maize_35below)
 
